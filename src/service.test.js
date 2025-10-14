@@ -82,6 +82,19 @@ test('update user', async () => {
   expect(userRes.body.user).toMatchObject({ 'id': testUser.id, 'name': updatedUser.name, 'email': updatedUser.email, 'roles': [{ role: 'diner' }] });
 });
 
+test('list users unauthorized', async () => {
+  const listUsersRes = await request(app).get('/api/user');
+  expect(listUsersRes.status).toBe(401);
+});
+
+test('list users', async () => {
+  // const [user, userToken] = await registerUser(request(app));
+  const listUsersRes = await request(app)
+    .get('/api/user')
+    .set('Authorization', `Bearer ${testUserAuthToken}`);
+  expect(listUsersRes.status).toBe(200);
+});
+
 test('get menu', async () => {
   const orderRes = await request(app).get('/api/order/menu');
   expect(orderRes.status).toBe(200);

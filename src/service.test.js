@@ -97,7 +97,8 @@ test('list users', async () => {
     .get('/api/user?page=1&limit=10&name=*')
     .set('Authorization', `Bearer ${testUserAuthToken}`);
   expect(listUsersRes.status).toBe(200);
-  listUsersRes.body.forEach(user => {
+  expect (listUsersRes.body.more).toBeDefined();
+  listUsersRes.body.users.forEach(user => {
     expect(user.id).toBeInteger;
     expect(user.name).toBeString;
     expect(user.email).toMatch(/.+@.+\..+/);
@@ -112,7 +113,8 @@ test('list users searching for name', async () => {
     .get('/api/user?page=1&limit=10&name=pizza+diner')
     .set('Authorization', `Bearer ${testUserAuthToken}`);
   expect(listUsersRes.status).toBe(200);
-  listUsersRes.body.forEach(user => {
+  expect (listUsersRes.body.more).toBeDefined();
+  listUsersRes.body.users.forEach(user => {
     expect(user.id).toBeInteger;
     expect(user.name).toBeString;
     expect(user.email).toMatch(/.+@.+\..+/);

@@ -38,6 +38,7 @@ userRouter.docs = [
         },
       ],
     },
+    more: true,
   },
   {
     method: 'DELETE',
@@ -83,13 +84,8 @@ userRouter.get(
   '/',
   authRouter.authenticateToken,
   asyncHandler(async (req, res) => {
-    const page = Number(req.query.page);
-    const limit = Number(req.query.limit);
-    const name = req.query.name;
-
-    const users = await DB.listUsers(page, limit, name);
-
-    res.json(users);
+    const [users, more] = await DB.listUsers(req.query.page, req.query.limit, req.query.name);
+    res.json({ users, more });
   })
 );
 

@@ -4,6 +4,8 @@ const { DB, Role } = require('./database/database');
 
 
 const testUser = { name: 'pizza diner', email: 'reg@test.com', password: 'a' };
+const userToDelete = { name: 'delete me', email: 'deleteme@test.com', password: 'c' };
+let userIdToDelete;
 let testUserAuthToken;
 let adminUserAuthToken;
 let franchiseId;
@@ -13,6 +15,9 @@ beforeAll(async () => {
   testUser.email = Math.random().toString(36).substring(2, 12) + '@test.com';
   const registerRes = await request(app).post('/api/auth').send(testUser);
   testUserAuthToken = registerRes.body.token;
+
+  const registerToDeleteRes = await request(app).post('/api/auth').send(userToDelete);
+  userIdToDelete = registerToDeleteRes.body.user.id;
 
   const adminUser = await createAdminUser();
   const loginRes = await request(app).put('/api/auth').send(adminUser);
@@ -122,6 +127,12 @@ test('delete user unauthorized', async () => {
   const userRes = await request(app).delete(`/api/user/${deleteUserId}`).set('Authorization', `Bearer ${testUserAuthToken}`);
   expect(userRes.status).toBe(403);
   expect(userRes.body.message).toBe("unauthorized");
+});
+
+test('delete user', async () => {
+  const userRes = await request(app).delete(`/api/user/${userIdToDelete}`).set('Authorization', `Bearer ${adminUserAuthToken}`);
+  expect(userRes.status).toBe(200);
+  expect(userRes.body.message).toBe("user successfully deleted");
 });
 
 test('get menu', async () => {

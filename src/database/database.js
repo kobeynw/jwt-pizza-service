@@ -99,6 +99,34 @@ class DB {
     }
   }
 
+  async listUsers(page, limit, name) {
+    const connection = await this.getConnection();
+    try {
+      const offset = this.getOffset(page, limit);
+      let usersQuery;
+      const params = [];
+      if (name && name != '*') {
+        usersQuery = `SELECT id, name, email FROM user WHERE name=? LIMIT ${offset}, ${limit}`;
+        params.push(name);
+      } else {
+        usersQuery = `SELECT id, name, email FROM user LIMIT ${offset}, ${limit}`;
+      }
+      const userResults = await this.query(connection, usersQuery, params);
+
+      for (const user of userResults) {
+        const roles = await this.query(connection, `SELECT role FROM userRole WHERE userId=?`, [user.id]);
+        user.roles = [];
+        for (const role of roles) {
+          user.roles.push(role);
+        }
+      }
+
+      return userResults;
+    } finally {
+      connection.end();
+    }
+  }
+
   async loginUser(userId, token) {
     token = this.getTokenSignature(token);
     const connection = await this.getConnection();

@@ -88,11 +88,33 @@ test('list users unauthorized', async () => {
 });
 
 test('list users', async () => {
-  // const [user, userToken] = await registerUser(request(app));
   const listUsersRes = await request(app)
-    .get('/api/user')
+    .get('/api/user?page=1&limit=10&name=*')
     .set('Authorization', `Bearer ${testUserAuthToken}`);
   expect(listUsersRes.status).toBe(200);
+  listUsersRes.body.forEach(user => {
+    expect(user.id).toBeInteger;
+    expect(user.name).toBeString;
+    expect(user.email).toMatch(/.+@.+\..+/);
+    user.roles.forEach(roleObj => {
+      expect(['diner', 'franchisee', 'admin']).toContain(roleObj.role);
+    });
+  });
+});
+
+test('list users searching for name', async () => {
+  const listUsersRes = await request(app)
+    .get('/api/user?page=1&limit=10&name=pizza+diner')
+    .set('Authorization', `Bearer ${testUserAuthToken}`);
+  expect(listUsersRes.status).toBe(200);
+  listUsersRes.body.forEach(user => {
+    expect(user.id).toBeInteger;
+    expect(user.name).toBeString;
+    expect(user.email).toMatch(/.+@.+\..+/);
+    user.roles.forEach(roleObj => {
+      expect(['franchisee']).toContain(roleObj.role);
+    });
+  });
 });
 
 test('get menu', async () => {

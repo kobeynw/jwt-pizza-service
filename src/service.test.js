@@ -117,6 +117,13 @@ test('list users searching for name', async () => {
   });
 });
 
+test('delete user unauthorized', async () => {
+  const deleteUserId = 5;
+  const userRes = await request(app).delete(`/api/user/${deleteUserId}`).set('Authorization', `Bearer ${testUserAuthToken}`);
+  expect(userRes.status).toBe(403);
+  expect(userRes.body.message).toBe("unauthorized");
+});
+
 test('get menu', async () => {
   const orderRes = await request(app).get('/api/order/menu');
   expect(orderRes.status).toBe(200);

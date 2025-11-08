@@ -5,6 +5,7 @@ const franchiseRouter = require('./routes/franchiseRouter.js');
 const userRouter = require('./routes/userRouter.js');
 const version = require('./version.json');
 const config = require('./config.js');
+const metrics = require('./metrics.js');
 
 const app = express();
 app.use(express.json());
@@ -17,7 +18,14 @@ app.use((req, res, next) => {
   next();
 });
 
+// Grafana metrics for api endpoints
+app.use(metrics.requestTracker);
+
 const apiRouter = express.Router();
+
+// Grafana metrics for request latency
+apiRouter.use(metrics.requestLatency);
+
 app.use('/api', apiRouter);
 apiRouter.use('/auth', authRouter);
 apiRouter.use('/user', userRouter);

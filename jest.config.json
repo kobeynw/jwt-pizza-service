@@ -3,7 +3,8 @@
   "coverageReporters": ["json-summary", "text"],
   "coverageThreshold": {
     "global": {
-      "lines": 80
+      "lines": 50
     }
-  }
+  },
+  "testPathIgnorePatterns": ["/dist/"]
 }

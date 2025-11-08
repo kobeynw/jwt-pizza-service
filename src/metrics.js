@@ -71,7 +71,7 @@ function pizzaCreationLatency(latency) {
 }
 
 // This will periodically send metrics to Grafana
-setInterval(() => {
+let metricsInterval = setInterval(() => {
   const metrics = [];
 
   // Add request metrics
@@ -170,6 +170,12 @@ function sendMetricToGrafana(metrics) {
     });
 }
 
+function stopMetrics() {
+  if (metricsInterval) {
+    clearInterval(metricsInterval);
+  }
+}
+
 module.exports = {
   requestTracker,
   incrementActiveUsers,
@@ -178,4 +184,5 @@ module.exports = {
   pizzaTransaction,
   requestLatency,
   pizzaCreationLatency,
+  stopMetrics,
 };

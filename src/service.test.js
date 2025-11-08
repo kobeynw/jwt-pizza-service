@@ -1,6 +1,7 @@
 const request = require('supertest');
 const app = require('./service');
 const { DB, Role } = require('./database/database');
+const metrics = require('./metrics');
 
 
 const testUser = { name: 'pizza diner', email: 'reg@test.com', password: 'a' };
@@ -12,6 +13,8 @@ let franchiseId;
 let storeId;
 
 beforeAll(async () => {
+  metrics.stopMetrics();
+
   testUser.email = Math.random().toString(36).substring(2, 12) + '@test.com';
   const registerRes = await request(app).post('/api/auth').send(testUser);
   testUserAuthToken = registerRes.body.token;

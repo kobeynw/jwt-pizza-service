@@ -60,6 +60,12 @@ jobs:
               url: '${{ secrets.METRICS_URL }}',
               apiKey: '${{ secrets.METRICS_API_KEY }}',
             },
+            logging: {
+              source: 'jwt-pizza-service',
+              userId: ${{ secrets.LOGGING_USER_ID }},
+              url: '${{ secrets.LOGGING_URL }}',
+              apiKey: '${{ secrets.LOGGING_API_KEY }}',
+            },
           };" > src/config.js
 
       - name: Tests
@@ -137,3 +143,7 @@ jobs:
       - name: Deploy new container
         run: |
           aws ecs update-service --cluster jwt-pizza-service --service jwt-pizza-service --force-new-deployment
+
+      - name: Annotate deployment in Grafana
+        run: |
+          curl -s -X POST https://kobey.grafana.net/api/annotations -H "Authorization: Bearer ${{ secrets.GRAFANA_ACCESS_TOKEN }}" -H "Content-Type:application/json" -d '{"dashboardUID":"ko9bk22", "panelId":9, "tags":["backend","production"], "text":"Version '"$version"' deployed" }'

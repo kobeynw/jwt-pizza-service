@@ -6,6 +6,7 @@ const userRouter = require('./routes/userRouter.js');
 const version = require('./version.json');
 const config = require('./config.js');
 const metrics = require('./metrics.js');
+const logger = require('./logger.js');
 
 const app = express();
 app.use(express.json());
@@ -18,8 +19,9 @@ app.use((req, res, next) => {
   next();
 });
 
-// Grafana metrics for api endpoints
+// Grafana metrics and logs for api endpoints
 app.use(metrics.requestTracker);
+app.use(logger.httpLogger);
 
 const apiRouter = express.Router();
 
@@ -55,6 +57,13 @@ app.use('*', (req, res) => {
 
 // Default error handler for all exceptions and errors.
 app.use((err, req, res, next) => {
+  const logData = {
+    method: req.method,
+    statusCode: res.statusCode,
+    reqBody: JSON.stringify(req.body),
+    resBody: JSON.stringify(res.body),
+  };
+  logger.log(logger.statusToLogLevel(res.statusCode), 'http', logData);
   res.status(err.statusCode ?? 500).json({ message: err.message, stack: err.stack });
   next();
 });

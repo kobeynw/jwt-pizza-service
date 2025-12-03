@@ -83,6 +83,18 @@ orderRouter.post(
     const start = Date.now();
 
     const orderReq = req.body;
+    // validate pizza price
+    const menu = await DB.getMenu();
+    orderReq.items.forEach(item => {
+      menu.forEach(menuItem => {
+        if (item.menuId === menuItem.id) {
+          if (item.price !== menuItem.price) {
+            throw new StatusCodeError('unable to purchase pizza', 500);
+          }
+        }
+      });
+    });
+
     const order = await DB.addDinerOrder(req.user, orderReq);
     const r = await fetch(`${config.factory.url}/api/order`, {
       method: 'POST',

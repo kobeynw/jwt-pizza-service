@@ -147,3 +147,10 @@ jobs:
       - name: Annotate deployment in Grafana
         run: |
           curl -s -X POST https://kobey.grafana.net/api/annotations -H "Authorization: Bearer ${{ secrets.GRAFANA_ACCESS_TOKEN }}" -H "Content-Type:application/json" -d '{"dashboardUID":"ko9bk22", "panelId":9, "tags":["backend","production"], "text":"Version '"$version"' deployed" }'
+
+  security:
+    steps:
+      - name: Run Dastardly Action Step
+        uses: PortSwigger/dastardly-github-action@main
+        with:
+          target-url: 'https://pizza.jwtpizza329.click'

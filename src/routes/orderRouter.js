@@ -45,6 +45,7 @@ orderRouter.docs = [
 // getMenu
 orderRouter.get(
   '/menu',
+  authRouter.authenticateToken,
   asyncHandler(async (req, res) => {
     res.send(await DB.getMenu());
   })

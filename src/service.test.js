@@ -141,9 +141,11 @@ test('delete user', async () => {
 });
 
 test('get menu', async () => {
-  const orderRes = await request(app).get('/api/order/menu');
+  const orderRes = await request(app).get('/api/order/menu').set('Authorization', `Bearer ${adminUserAuthToken}`);
   expect(orderRes.status).toBe(200);
   orderRes.body.forEach(item => {
+    console.log(`ITEM ID: ${item.id}`);
+    console.log(`ITEM PRICE: ${item.price}`);
     expect(item.id).toBeInteger;
     expect(item.title).toBeString;
     expect(item.image).toMatch(/.+\..+/);
